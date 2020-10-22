@@ -1,0 +1,109 @@
+create database TemplateEcommerce;
+use TemplateEcommerce;
+
+
+create table if not exists SubCategoria (
+ codigo int primary key,
+ nombre varchar(50),
+ esvisible boolean ,
+categoria_superior int 
+);
+
+
+
+create table Categoria (
+codigo int primary key,
+nombre varchar(50),
+esvisible boolean ,
+fk_Categoria_subcat int,
+foreign key(fk_Categoria_subcat) references SubCategoria(codigo) 
+);
+
+
+create table Producto(
+webid int auto_increment primary key,
+nombre varchar(50),
+precio float,
+precionuevo float,
+stock int,
+nuevo boolean,
+recomendado boolean,
+esvisible boolean,
+descripcion varchar(50),
+fk_producto_categoria int,
+fk_producto_subcategoria int,
+foreign key(fk_producto_categoria) references Categoria(codigo),
+foreign key(fk_producto_subcategoria) references Categoria(codigo),
+img varchar(100)
+);
+
+
+/*PROCEDIMIENTO ALMACENADO LISTAR PRODUCTOS RECOMENDADOS*/
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_listarProductosRecomendados()
+BEGIN
+	SELECT *
+	FROM 
+		producto;    
+END$$
+DELIMITER ;
+
+
+
+/*PROCEDIMIENTO ALMACENADO REGISTRAR PRODUCTO*/
+DELIMITER $$
+CREATE PROCEDURE sp_registrarProducto(_nombre varchar(50), _precio float, _precionuevo float,
+_stock int, _nuevo boolean,_recomendado boolean,_esvisible boolean, _descripcion varchar(50),
+_codigoCategoria int, _codigoSubCategoria int,_img varchar(100))
+BEGIN
+	INSERT INTO PRODUCTO(nombre,precio,precionuevo,stock,nuevo,recomendado,esvisible,descripcion,fk_producto_categoria
+    ,fk_producto_subcategoria,img) VALUES(_nombre, _precio,_precionuevo,
+_stock , _nuevo,_recomendado,_esvisible, _descripcion,
+_codigoCategoria , _codigoSubCategoria,_img );
+    
+END$$
+DELIMITER ;
+
+
+call sp_registrarProducto('polo',599.98,600.98,5,true,true,true,'asdajhjh',1,1,'ijiji');
+
+
+/*INSERTANDO CATEGORIAS Y SUBCATEGORIAS*/
+select *from producto;
+
+insert into subcategoria values(1,'polos',true,1);
+insert into subcategoria values(2,'chompas',true,1);
+insert into subcategoria values(3,'zapatos',true,1);
+
+insert into categoria values(1,'hombre',true,1);
+insert into categoria values(2,'mujer',true,2);
+
+
+/*PROCEDIMIENTOS PARA LISTAR CATEGORIAS Y SUBCATEGORIAS*/
+
+DELIMITER $$
+CREATE PROCEDURE sp_listarTodoSubCategoria() 
+BEGIN
+	select *from subcategoria;
+    
+END$$
+DELIMITER ;
+
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_listarCategorias() 
+BEGIN
+	select *from categoria;
+    
+END$$
+DELIMITER ;
+
+call sp_listarCategorias;
+
+
+
+
+
